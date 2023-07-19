@@ -3,11 +3,12 @@
     <div class="generator__container">
       <h1 class="generator__title">Password Generator</h1>
       <div class="generator__head">
-        {{ generatedPass }}
-        <div class="copy__info" v-if="copyInfo">Copied!</div>
+        {{ dataStore.generatedPass }}
+        <div class="copy__info" v-if="dataStore.copyInfo">Copied!</div>
         <i class="fa-regular fa-copy copyBtn" @click="copyBtn"></i>
       </div>
       <div class="generator__body">
+      <h1>{{ dataStore.count }}</h1>
         <div class="character__length-container">
           <div class="character__length">
             Character Length
@@ -47,26 +48,8 @@
         </div>
         <div class="character__strenght">
           STRENGTH
-          <div class="pass weak__pass" v-if="true">
-            WEAK
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="pass medium__pass" v-if="false">
-            MEDIUM
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="pass strong__pass" v-if="false">
-            STRONG
+          <div class="pass" :class="dataStore.activeClass">
+            {{ dataStore.passwordStatus }}
             <span></span>
             <span></span>
             <span></span>
@@ -85,10 +68,9 @@
 
 <script setup>
 import { ref } from "vue";
+import { useCounterStore } from '@/stores/counter'
+const dataStore = useCounterStore()
 
-let generatedPass = ref("");
-
-const copyInfo = ref(false)
 
 const minLength = 6;
 const maxLength = 22;
@@ -105,10 +87,8 @@ const numberChars = "0123456789";
 const symbolChars = `!@#$%^&*/?~(){}[]<>."'`;
 
 const generateRandomPass = () => {
-  generatedPass.value = "";
-
-  let baseChars = "";
-
+  dataStore.generatedPass = "";
+  let baseChars = lowerChars;
   if (lowerCase.value) {
     baseChars += lowerChars;
   }
@@ -125,18 +105,47 @@ const generateRandomPass = () => {
 
   for (let i = 0; i < passLength.value; i++) {
     const randomIndex = Math.floor(Math.random() * baseChars.length);
-    generatedPass.value += baseChars[randomIndex];
+    dataStore.generatedPass += baseChars[randomIndex];
+  }
+  checkPasswordStatus();
+};
+const checkPasswordStatus = () => {
+  let strong =
+    lowerCase.value == true &&
+    upperCase.value == true &&
+    numbers.value == true &&
+    symbols.value == true &&
+    passLength.value >= 12;
+
+  let medium =
+    (lowerCase.value == true &&
+      upperCase.value == true &&
+      numbers.value == true) ||
+    (symbols.value == true && 8 < passLength.value < 12);
+
+  let weak =
+    lowerCase.value == true ||
+    (upperCase.value == true && passLength.value < 8);
+
+  if (strong) {
+    dataStore.passwordStatus = "STRONG";
+    dataStore.activeClass = "strong__pass";
+  } else if (medium) {
+    dataStore.passwordStatus = "MEDIUM";
+    dataStore.activeClass = "medium__pass";
+  } else if (weak) {
+    dataStore.passwordStatus = "WEAK";
+    dataStore.activeClass = "weak__pass";
   }
 };
 
 const copyBtn = () => {
-  navigator.clipboard.writeText(generatedPass.value);
-  copyInfo.value = true
-  setTimeout(()=>{
-    copyInfo.value = false
-  },700)
+  navigator.clipboard.writeText(dataStore.generatedPass);
+  dataStore.copyInfo = true;
+  setTimeout(() => {
+    dataStore.copyInfo = false;
+  }, 700);
 };
-
 generateRandomPass();
 </script>
 
