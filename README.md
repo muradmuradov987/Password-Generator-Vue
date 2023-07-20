@@ -15,7 +15,7 @@ The Password Generator App is a web application built using Vue 3 Composition AP
 
 
 # Demo
-You can try out the live demo of the Password Generator App [here](https://github.com/muradmuradov987) <br />
+You can try out the live demo of the Password Generator App [here](https://pass-generator-vue.netlify.app) <br />
 
 # Installation
 1. git clone
