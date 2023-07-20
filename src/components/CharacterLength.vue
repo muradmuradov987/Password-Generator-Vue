@@ -71,7 +71,7 @@ const dataStore = useCounterStore();
       font-size: 18px;
       input {
         font-size: 18px;
-        width: 25px;
+        width: 30px;
       }
     }
     .character__range {
