@@ -1,29 +1,34 @@
-# pass-generator
+#  Password Generator App
+![Screenshot_1](https://github.com/muradmuradov987/pass-generator-vue/assets/69755315/72ff7665-e031-4462-9f17-ba8aadf91798)
 
-This template should help get you started developing with Vue 3 in Vite.
 
-## Recommended IDE Setup
+# Description
+The Password Generator App is a web application built using Vue 3 Composition API and Pinia state management. It allows users to generate strong and secure passwords with various customizable options.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+# Features
 
-## Customize configuration
+* Generate random passwords with custom length
+* Choose from a set of characters to include in the password (uppercase letters, lowercase letters, numbers, special characters)
+* Copy generated passwords to the clipboard with a single click
+* Responsive design, works on various screen sizes
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-## Project Setup
 
-```sh
+# Demo
+You can try out the live demo of the Password Generator App [here](https://pass-generator-vue.netlify.app) <br />
+
+# Installation
+1. git clone
+https://github.com/muradmuradov987/pass-generator-vue.git
+
+2. Change into the project directory:
+cd password-generator-app
+
+3. Install dependencies:
 npm install
-```
 
-### Compile and Hot-Reload for Development
 
-```sh
-npm run dev
-```
+### Happy password generating! If you have any questions or feedback, feel free to contact me.
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+Author: Murad Muradov <br />
+Email: m.muradmuradov@gmail.com
