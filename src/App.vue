@@ -2,62 +2,11 @@
   <div class="wrapper">
     <div class="generator__container">
       <h1 class="generator__title">Password Generator</h1>
-      <div class="generator__head">
-        {{ dataStore.generatedPass }}
-        <div class="copy__info" v-if="dataStore.copyInfo">Copied!</div>
-        <i class="fa-regular fa-copy copyBtn" @click="copyBtn"></i>
-      </div>
+      <PasswordNav />
       <div class="generator__body">
-      <h1>{{ dataStore.count }}</h1>
-        <div class="character__length-container">
-          <div class="character__length">
-            Character Length
-            <input
-              v-model="passLength"
-              :min="minLength"
-              :max="maxLength"
-              readonly
-              type="number"
-            />
-          </div>
-          <input
-            v-model="passLength"
-            :min="minLength"
-            :max="maxLength"
-            class="character__range"
-            type="range"
-          />
-        </div>
-        <div class="character__options">
-          <div>
-            <input type="checkbox" v-model="lowerCase" />
-            Include Lowercase Letters
-          </div>
-          <div>
-            <input type="checkbox" v-model="upperCase" />
-            Include Uppercase Letters
-          </div>
-          <div>
-            <input type="checkbox" v-model="numbers" />
-            Include Numbers
-          </div>
-          <div>
-            <input type="checkbox" v-model="symbols" />
-            Include Symbols
-          </div>
-        </div>
-        <div class="character__strenght">
-          STRENGTH
-          <div class="pass" :class="dataStore.activeClass">
-            {{ dataStore.passwordStatus }}
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
+        <CharacterLength />
+        <CharacterOptions />
+        <CharacterStrenght />
         <div class="generate__btn">
           <button @click="generateRandomPass">GENERATE</button>
         </div>
@@ -68,64 +17,54 @@
 
 <script setup>
 import { ref } from "vue";
-import { useCounterStore } from '@/stores/counter'
-const dataStore = useCounterStore()
-
-
-const minLength = 6;
-const maxLength = 22;
-const passLength = ref(minLength);
-
-const lowerCase = ref(true);
-const upperCase = ref(false);
-const numbers = ref(false);
-const symbols = ref(false);
-
-const lowerChars = "abcdefghijklmnopqrstuvwxyz";
-const upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const numberChars = "0123456789";
-const symbolChars = `!@#$%^&*/?~(){}[]<>."'`;
+import { useCounterStore } from "@/stores/counter";
+import PasswordNav from "@/components/PasswordNav.vue";
+import CharacterLength from "@/components/CharacterLength.vue";
+import CharacterOptions from "@/components/CharacterOptions.vue";
+import CharacterStrenght from "@/components/CharacterStrenght.vue";
+const dataStore = useCounterStore();
 
 const generateRandomPass = () => {
   dataStore.generatedPass = "";
-  let baseChars = lowerChars;
-  if (lowerCase.value) {
-    baseChars += lowerChars;
+  let baseChars = dataStore.charsItems.lowerChars;
+  if (dataStore.optionCase.lowerCase) {
+    baseChars += dataStore.charsItems.lowerChars;
   }
-  if (upperCase.value) {
-    baseChars += upperChars;
-  }
-
-  if (numbers.value) {
-    baseChars += numberChars;
-  }
-  if (symbols.value) {
-    baseChars += symbolChars;
+  if (dataStore.optionCase.upperCase) {
+    baseChars += dataStore.charsItems.upperChars;
   }
 
-  for (let i = 0; i < passLength.value; i++) {
+  if (dataStore.optionCase.numbers) {
+    baseChars += dataStore.charsItems.numberChars;
+  }
+  if (dataStore.optionCase.symbols) {
+    baseChars += dataStore.charsItems.symbolChars;
+  }
+
+  for (let i = 0; i < dataStore.passLength; i++) {
     const randomIndex = Math.floor(Math.random() * baseChars.length);
     dataStore.generatedPass += baseChars[randomIndex];
   }
   checkPasswordStatus();
 };
+
 const checkPasswordStatus = () => {
   let strong =
-    lowerCase.value == true &&
-    upperCase.value == true &&
-    numbers.value == true &&
-    symbols.value == true &&
-    passLength.value >= 12;
+    dataStore.optionCase.lowerCase == true &&
+    dataStore.optionCase.upperCase == true &&
+    dataStore.optionCase.numbers == true &&
+    dataStore.optionCase.symbols == true &&
+    dataStore.passLength >= 12;
 
   let medium =
-    (lowerCase.value == true &&
-      upperCase.value == true &&
-      numbers.value == true) ||
-    (symbols.value == true && 8 < passLength.value < 12);
+    (dataStore.optionCase.lowerCase == true &&
+      dataStore.optionCase.upperCase == true &&
+      dataStore.optionCase.numbers == true) ||
+    (dataStore.optionCase.symbols == true && 8 < dataStore.passLength < 12);
 
   let weak =
-    lowerCase.value == true ||
-    (upperCase.value == true && passLength.value < 8);
+    dataStore.optionCase.lowerCase == true ||
+    (dataStore.optionCase.upperCase == true && dataStore.passLength < 8);
 
   if (strong) {
     dataStore.passwordStatus = "STRONG";
@@ -137,14 +76,6 @@ const checkPasswordStatus = () => {
     dataStore.passwordStatus = "WEAK";
     dataStore.activeClass = "weak__pass";
   }
-};
-
-const copyBtn = () => {
-  navigator.clipboard.writeText(dataStore.generatedPass);
-  dataStore.copyInfo = true;
-  setTimeout(() => {
-    dataStore.copyInfo = false;
-  }, 700);
 };
 generateRandomPass();
 </script>
@@ -161,141 +92,66 @@ generateRandomPass();
     width: 500px;
     .generator__title {
       text-align: center;
-      color: #878690;
-      margin-bottom: 20px;
-    }
-    .generator__head {
-      background: #24232b;
-      position: relative;
-      padding: 20px;
-      font-size: 25px;
       color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 20px;
-      .copyBtn {
-        color: #a1ffb0;
-        cursor: pointer;
-      }
-      .copy__info {
-        width: 80px;
-        background: #24232b;
-        font-size: 14px;
-        font-weight: 700;
-        position: absolute;
-        right: 0;
-        top: -35px;
-        text-align: center;
-        padding: 5px;
-        border-radius: 4px;
-        color: #a1ffb0;
-      }
     }
     .generator__body {
       padding: 30px 20px;
-      background: #24232b;
-      .character__length-container {
-        .character__length {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          color: white;
-          font-size: 20px;
-          margin-bottom: 10px;
-          input {
-            color: #a1ffb0;
-            font-size: 25px;
-            width: 40px;
-            background: none;
-            border: none;
-            outline: none;
-            &::-webkit-inner-spin-button {
-              -webkit-appearance: none;
-              margin: 0;
-            }
-          }
-        }
-        .character__range {
-          width: 100%;
-        }
-      }
-      .character__options {
-        margin: 30px 0;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        font-size: 20px;
-        color: white;
-        input {
-          margin-right: 10px;
-          cursor: pointer;
-        }
-      }
-      .character__strenght {
-        display: flex;
-        justify-content: space-between;
-        color: white;
-        font-size: 20px;
-        background: #181818;
-        padding: 20px;
-        .pass {
-          span {
-            display: inline-block;
-            width: 10px;
-            height: 20px;
-            margin-left: 5px;
-          }
-        }
-        .weak__pass {
-          color: red;
-          span {
-            border: 1px solid red;
-            &:nth-child(1) {
-              background: red;
-            }
-            &:nth-child(2) {
-              background: red;
-            }
-          }
-        }
-        .medium__pass {
-          color: orange;
-          span {
-            border: 1px solid orange;
-            &:nth-child(1) {
-              background: orange;
-            }
-            &:nth-child(2) {
-              background: orange;
-            }
-            &:nth-child(3) {
-              background: orange;
-            }
-            &:nth-child(4) {
-              background: orange;
-            }
-          }
-        }
-        .strong__pass {
-          color: green;
-          span {
-            border: 1px solid green;
-            background: green;
-          }
-        }
-      }
+      background: #0b1740;
       .generate__btn {
         margin-top: 30px;
         button {
           width: 100%;
           padding: 20px;
-          background: none;
           outline: none;
-          border: 1px solid #a1ffb0;
-          color: #a1ffb0;
+          border: 1px solid #192d66;
+          color: white;
           cursor: pointer;
           font-size: 20px;
+          position: relative;
+          background-image: linear-gradient(to right, #0b1740, #192d66);
+          &:hover {
+            background-image: linear-gradient(to right, #0e1e4b, #192d66);
+          }
+          &:after {
+            content: "";
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: all 0.5s;
+            box-shadow: 0 0 10px 10px #ffa500;
+          }
+          &:active:after {
+            box-shadow: 0 0 0 0 #ffa500;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 1;
+            transition: 0s;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 0 20px;
+    .generator__container {
+      .generator__title {
+        font-size: 30px;
+      }
+      .generator__body {
+        padding:  20px;
+        .generate__btn {
+          button {
+            padding: 10px;
+          }
         }
       }
     }

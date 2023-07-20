@@ -1,19 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,500&display=swap');
 *,
 *::before,
 *::after {
   box-sizing: border-box;
   margin: 0;
   font-weight: normal;
+  font-family: 'Nunito Sans', sans-serif;
 }
 
 body {
-  background: #181818;
+  background: #060F2D;
 }
 
-/* .green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-} */
 
 
